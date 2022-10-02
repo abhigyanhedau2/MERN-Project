@@ -23,7 +23,6 @@ const USERS = [
 ];
 
 const Users = () => {
-
     return <UsersList items={USERS} />;
 };
 

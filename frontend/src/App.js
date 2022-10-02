@@ -7,17 +7,21 @@ import {
 } from "react-router-dom";
 import Users from './users/pages/Users';
 import NewPlace from './places/pages/NewPlace';
+import MainNavigation from './shared/components/Navigation/MainNavigation';
 
 function App() {
 	return (
 		<Router>
-			<Routes>
-				<Route exact path="/" element={<Users />} />
-				<Route exact path="/places/new" element={<NewPlace />} />
+			<MainNavigation />
+			<main className='main'>
+				<Routes>
+					<Route exact path="/" element={<Users />} />
+					<Route exact path="/places/new" element={<NewPlace />} />
 
-				{/* Navigate redirect to the '/' path when no endpoint matches */}
-				<Route path="*" element={<Navigate to="/" replace />} />
-			</Routes>
+					{/* Navigate redirect to the '/' path when no endpoint matches */}
+					<Route path="*" element={<Navigate to="/" replace />} />
+				</Routes>
+			</main>
 		</Router>
 	);
 }
