@@ -19,7 +19,7 @@ const USERS = [
         name: 'Alice',
         profileImg: 'https://images.pexels.com/photos/1310522/pexels-photo-1310522.jpeg?auto=compress&cs=tinysrgb&w=1600',
         placesCount: 3
-    },
+    }
 ];
 
 const Users = () => {

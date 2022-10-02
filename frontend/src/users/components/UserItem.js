@@ -1,9 +1,26 @@
 import React from 'react';
-import './UserItem.module.css';
+import './UserItem.css';
+import Avatar from '../../shared/components/UIElements/Avatar/Avatar';
+import Card from '../../shared/components/UIElements/Card/Card';
+import { Link } from 'react-router-dom';
 
-const UserItem = () => {
+const UserItem = (props) => {
     return (
-        <div>UserItem</div>
+        <li className='user-item'>
+            <div className="user-item__content">
+                <Card className="user-item__content">
+                    <Link to={`/${props.id}/places`}>
+                        <div className="user-item__image">
+                            <Avatar image={props.profileImg} alt={props.name} />
+                        </div>
+                        <div className="user-item__info">
+                            <h2>{props.name}</h2>
+                            <h3>{props.placesCount} {props.placesCount === 1 ? 'Place' : 'Places'}</h3>
+                        </div>
+                    </Link>
+                </Card>
+            </div>
+        </li>
     )
 };
 
