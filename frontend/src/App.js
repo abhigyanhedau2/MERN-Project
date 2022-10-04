@@ -7,6 +7,7 @@ import {
 } from "react-router-dom";
 import Users from './users/pages/Users';
 import NewPlace from './places/pages/NewPlace';
+import UserPlaces from './places/pages/UserPlaces';
 import MainNavigation from './shared/components/Navigation/MainNavigation';
 
 function App() {
@@ -16,6 +17,7 @@ function App() {
 			<main className='main'>
 				<Routes>
 					<Route exact path="/" element={<Users />} />
+					<Route exact path="/:userId/places" element={<UserPlaces />} />
 					<Route exact path="/places/new" element={<NewPlace />} />
 
 					{/* Navigate redirect to the '/' path when no endpoint matches */}
