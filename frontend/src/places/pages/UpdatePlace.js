@@ -1,6 +1,7 @@
 import React from 'react';
 import { useParams } from 'react-router-dom';
 import { VALIDATOR_REQUIRE, VALIDATOR_MINLENGTH } from '../../shared/util/validators';
+import useForm from '../../shared/hooks/form-hook';
 import Input from '../../shared/components/FormElements/Input';
 import Button from '../../shared/components/FormElements/Button';
 import './PlaceForm.css';
@@ -52,7 +53,6 @@ const UpdatePlace = () => {
 
     // If no place is found
     if (!toBeUpdatedPlace) {
-
         return (
             <div className="center">
                 <h2>Could not find this place.</h2>
@@ -60,8 +60,24 @@ const UpdatePlace = () => {
         )
     }
 
+    // eslint-disable-next-line
+    const [formState, inputChangeHandler] = useForm({
+        title: {
+            value: toBeUpdatedPlace.title,
+            isValid: true
+        },
+        description: {
+            value: toBeUpdatedPlace.description,
+            isValid: true
+        }
+    }, true);
+
+    const formSubmitHandler = (event) => {
+        event.preventDefault()
+    };
+
     return (
-        <form className='place-form'>
+        <form className='place-form' onSubmit={formSubmitHandler}>
             <Input
                 title="title"
                 element="input"
@@ -69,9 +85,9 @@ const UpdatePlace = () => {
                 label="Title"
                 validators={[VALIDATOR_REQUIRE()]}
                 errorText="Please enter a valid title"
-                onInput={() => { }}
-                value={toBeUpdatedPlace.title}
-                valid={true}
+                onInput={inputChangeHandler}
+                initialValue={formState.inputs.title.value}
+                initialValidity={formState.inputs.title.isValid}
             />
             <Input
                 description="description"
@@ -79,11 +95,11 @@ const UpdatePlace = () => {
                 label="Description"
                 validators={[VALIDATOR_MINLENGTH(5)]}
                 errorText="Please enter a valid description (atleast 5 characters)."
-                onInput={() => { }}
-                value={toBeUpdatedPlace.description}
-                valid={true}
+                onInput={inputChangeHandler}
+                initialValue={formState.inputs.description.value}
+                initialValidity={formState.inputs.description.isValid}
             />
-            <Button type="submit" disable={false}>Update Place</Button>
+            <Button type="submit" disable={!formState.isValid}>Update Place</Button>
         </form>
 
     )
