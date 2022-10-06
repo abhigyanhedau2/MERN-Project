@@ -4,6 +4,7 @@ import { VALIDATOR_REQUIRE, VALIDATOR_MINLENGTH } from '../../shared/util/valida
 import useForm from '../../shared/hooks/use-form';
 import Input from '../../shared/components/FormElements/Input';
 import Button from '../../shared/components/FormElements/Button';
+import Card from '../../shared/components/UIElements/Card/Card';
 import './PlaceForm.css';
 
 const DUMMY_PLACES = [
@@ -66,16 +67,18 @@ const UpdatePlace = () => {
 
     useEffect(() => {
 
-        setFormData({
-            title: {
-                value: toBeUpdatedPlace.title,
-                isValid: true
-            },
-            description: {
-                value: toBeUpdatedPlace.description,
-                isValid: true
-            }
-        }, true);
+        if (toBeUpdatedPlace) {
+            setFormData({
+                title: {
+                    value: toBeUpdatedPlace.title,
+                    isValid: true
+                },
+                description: {
+                    value: toBeUpdatedPlace.description,
+                    isValid: true
+                }
+            }, true);
+        }
 
         setIsLoading(false);
 
@@ -84,7 +87,9 @@ const UpdatePlace = () => {
     if (!toBeUpdatedPlace) {
         return (
             <div className="center">
-                <h2>Could not find the place!</h2>
+                <Card style={{ padding: '1rem' }}>
+                    <h2>Could not find the place!</h2>
+                </Card>
             </div>
         );
     }
