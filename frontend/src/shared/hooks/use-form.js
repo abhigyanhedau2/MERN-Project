@@ -1,20 +1,21 @@
 import { useCallback, useReducer } from "react";
 
 const formReducer = (state, action) => {
+
     switch (action.type) {
+
         case 'INPUT_CHANGE':
             let formIsValid = true;
 
-            // For all inputs in the inputs object
             for (const inputId in state.inputs) {
 
-                // if the current input is the input which got updated
-                if (inputId === action.inputId) {
+                // If the id is provided, update the validity state
+                if (inputId === action.inputId)
                     formIsValid = formIsValid && action.isValid;
-                } else {
-                    // Set the previous value to it
-                    formIsValid = formIsValid && state.inputs[inputId].isValid
-                }
+
+                // Else, keep the previous validity state
+                else
+                    formIsValid = formIsValid && state.inputs[inputId].isValid;
             }
 
             return {
@@ -27,11 +28,12 @@ const formReducer = (state, action) => {
                     }
                 },
                 isValid: formIsValid
-            }
+            };
 
         default:
             return state;
     }
+
 };
 
 const useForm = (initialInputs, initialFormValidity) => {
@@ -41,16 +43,16 @@ const useForm = (initialInputs, initialFormValidity) => {
         isValid: initialFormValidity
     });
 
-    const inputChangeHandler = useCallback((id, value, isValid) => {
+    const inputHandler = useCallback((id, value, isValid) => {
         dispatch({
             type: 'INPUT_CHANGE',
             value: value,
             isValid: isValid,
             inputId: id
-        })
-    }, [dispatch]);
+        });
+    }, []);
 
-    return [formState, inputChangeHandler];
+    return [formState, inputHandler];
 };
 
 export default useForm;
