@@ -1,12 +1,15 @@
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
 import Card from '../../shared/components/UIElements/Card/Card';
 import { VALIDATOR_EMAIL, VALIDATOR_MINLENGTH, VALIDATOR_REQUIRE } from '../../shared/util/validators';
 import useForm from '../../shared/hooks/use-form';
 import Input from '../../shared/components/FormElements/Input';
 import Button from '../../shared/components/FormElements/Button';
+import AuthContext from '../../shared/store/auth-context';
 import './Auth.css';
 
 const Auth = () => {
+
+    const authContext = useContext(AuthContext);
 
     const [isLogInMode, setIsLogInMode] = useState(true);
 
@@ -27,7 +30,7 @@ const Auth = () => {
         if (!isLogInMode) {
             setFormData({
                 ...formState.inputs,
-                name: undefined                
+                name: undefined
                 // If both are valid, then only set the overall form state to valid,
                 // since, we're going from signup to login mode
             }, formState.inputs.email.isValid && formState.inputs.password.isValid);
@@ -52,7 +55,7 @@ const Auth = () => {
     const formSubmitHandler = (event) => {
         event.preventDefault();
 
-        
+        authContext.login();
     };
 
     return (
