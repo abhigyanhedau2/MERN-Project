@@ -9,6 +9,10 @@ const formReducer = (state, action) => {
 
             for (const inputId in state.inputs) {
 
+                // if any of the input fields is undefined
+                if(!state.inputs[inputId])
+                    continue;
+
                 // If the id is provided, update the validity state
                 if (inputId === action.inputId)
                     formIsValid = formIsValid && action.isValid;
