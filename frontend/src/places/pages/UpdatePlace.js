@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { VALIDATOR_REQUIRE, VALIDATOR_MINLENGTH } from '../../shared/util/validators';
 import useForm from '../../shared/hooks/use-form';
@@ -47,25 +47,52 @@ const DUMMY_PLACES = [
 
 const UpdatePlace = () => {
 
+    const [isLoading, setIsLoading] = useState(true);
+
     const placeId = useParams().placeId;
+
+    const [formState, inputChangeHandler, setFormData] = useForm({
+        title: {
+            value: '',
+            isValid: false
+        },
+        description: {
+            value: '',
+            isValid: false
+        }
+    }, false);
 
     const toBeUpdatedPlace = DUMMY_PLACES.find(place => place.id === placeId);
 
-    const [formState, inputChangeHandler] = useForm({
-        title: {
-            value: toBeUpdatedPlace.title,
-            isValid: true
-        },
-        description: {
-            value: toBeUpdatedPlace.description,
-            isValid: true
-        }
-    }, true);
+    useEffect(() => {
+
+        setFormData({
+            title: {
+                value: toBeUpdatedPlace.title,
+                isValid: true
+            },
+            description: {
+                value: toBeUpdatedPlace.description,
+                isValid: true
+            }
+        }, true);
+
+        setIsLoading(false);
+
+    }, [setFormData, toBeUpdatedPlace]);
 
     if (!toBeUpdatedPlace) {
         return (
             <div className="center">
                 <h2>Could not find the place!</h2>
+            </div>
+        );
+    }
+
+    if (isLoading) {
+        return (
+            <div className="center">
+                <h2>Loading...</h2>
             </div>
         );
     }
