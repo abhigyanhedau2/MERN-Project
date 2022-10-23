@@ -1,6 +1,7 @@
 const bodyParser = require('body-parser');
 const express = require('express');
 const placeRouter = require('./routes/place-routes');
+const userRouter = require('./routes/user-routes');
 const HttpError = require('./utils/http-error');
 require('dotenv').config();
 
@@ -9,6 +10,7 @@ app.use(bodyParser.json());
 
 
 app.use('/api/v1/places', placeRouter);
+app.use('/api/v1/users', userRouter);
 
 app.use('*', (req, res, next) => {
     next(new HttpError(404, 'Cannot find this route.'))
