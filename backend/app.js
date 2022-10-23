@@ -1,8 +1,11 @@
+const bodyParser = require('body-parser');
 const express = require('express');
 const placeRouter = require('./routes/place-routes');
 require('dotenv').config();
 
 const app = express();
+app.use(bodyParser.json());
+
 
 app.use('/api/v1/places', placeRouter);
 
