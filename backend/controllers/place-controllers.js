@@ -44,7 +44,7 @@ const getPlaceById = (req, res, next) => {
 
 };
 
-const getPlaceByUserId = (req, res, next) => {
+const getPlacesByUserId = (req, res, next) => {
 
     const userId = req.params.userId;
 
@@ -128,4 +128,4 @@ const deletePlaceById = (req, res, next) => {
 
  };
 
-module.exports = { getPlaceById, getPlaceByUserId, createPlace, updatePlaceById, deletePlaceById };
+module.exports = { getPlaceById, getPlacesByUserId, createPlace, updatePlaceById, deletePlaceById };
