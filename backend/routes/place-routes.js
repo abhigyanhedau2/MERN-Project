@@ -13,6 +13,17 @@ const DUMMY_PLACES = [
         },
         address: '20 W 34th St, New York, NY 10001',
         creator: 'u1'
+    },
+    {
+        id: 'p2',
+        title: 'Eiffel Tower',
+        description: 'One of the most famous towers in the world',
+        location: {
+            lat: 48.8583736,
+            lng: 2.2922926
+        },
+        address: 'Champ de Mars, 5 Av. Anatole France, 75007 Paris, France',
+        creator: 'u1'
     }
 ];
 
@@ -26,6 +37,23 @@ router.get('/:placeId', (req, res, next) => {
         status: 'success',
         data: {
             place: place
+        }
+    });
+
+});
+
+// Get places belonging to a specific user
+router.get('/user/:userId', (req, res, next) => {
+
+    const userId = req.params.userId;
+
+    const userPlaces = DUMMY_PLACES.filter(item => item.creator === userId);
+
+    res.status(200).json({
+        status: 'success',
+        results: userPlaces.length,
+        data: {
+            userPlaces: userPlaces
         }
     });
 
