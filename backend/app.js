@@ -1,6 +1,7 @@
 const bodyParser = require('body-parser');
 const express = require('express');
 const placeRouter = require('./routes/place-routes');
+const HttpError = require('./utils/http-error');
 require('dotenv').config();
 
 const app = express();
@@ -8,6 +9,10 @@ app.use(bodyParser.json());
 
 
 app.use('/api/v1/places', placeRouter);
+
+app.use('*', (req, res, next) => {
+    next(new HttpError(404, 'Cannot find this route.'))
+});
 
 // If we give 4 params to a callback function, it will be treater as error handler functions
 app.use((err, req, res, next) => {
