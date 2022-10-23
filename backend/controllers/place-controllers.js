@@ -87,4 +87,30 @@ const createPlace = (req, res, next) => {
 
 };
 
-module.exports = { getPlaceById, getPlaceByUserId, createPlace };
+const updatePlaceById = (req, res, next) => {
+
+    const placeId = req.params.placeId;
+    const { title, description } = req.body;
+
+    // Creating the copy of the found place, so that we won't change the actual object
+    const toBeUpdatedPlace = { ...DUMMY_PLACES.find(item => item.id === placeId) };
+    const placeIndex = DUMMY_PLACES.findIndex(item => item.id === placeId);
+
+    if (!toBeUpdatedPlace)
+        return next(new HttpError(404, 'Could not find a place for the provided id'));
+
+    toBeUpdatedPlace.title = title;
+    toBeUpdatedPlace.description = description;
+
+    DUMMY_PLACES[placeIndex] = toBeUpdatedPlace;
+
+    res.status(200).json({
+        status: 'success',
+        place: toBeUpdatedPlace
+    });
+
+};
+
+const deletePlaceById = (req, res, next) => { };
+
+module.exports = { getPlaceById, getPlaceByUserId, createPlace, updatePlaceById, deletePlaceById };
