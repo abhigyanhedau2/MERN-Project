@@ -1,5 +1,7 @@
 const bodyParser = require('body-parser');
 const express = require('express');
+const mongoose = require('mongoose');
+
 const placeRouter = require('./routes/place-routes');
 const userRouter = require('./routes/user-routes');
 const HttpError = require('./utils/http-error');
@@ -30,6 +32,14 @@ app.use((err, req, res, next) => {
 
 });
 
-app.listen(process.env.PORT, () => {
-    console.log(`App listening on port ${process.env.PORT}`);
-});
+try {
+    // If the db connection is successful, start the server
+    mongoose.connect(process.env.MONGODB_CONNECTION_STRING, () => {
+        app.listen(process.env.PORT, () => {
+            console.log(`App listening on port ${process.env.PORT}`);
+        });
+    });
+} catch (error) {
+    console.log(error);
+}
+
