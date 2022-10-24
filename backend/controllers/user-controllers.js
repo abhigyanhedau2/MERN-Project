@@ -1,4 +1,5 @@
 const HttpError = require('../utils/http-error');
+const validator = require('express-validator');
 const uuid = require('uuid').v4;
 
 const DUMMY_USERS = [

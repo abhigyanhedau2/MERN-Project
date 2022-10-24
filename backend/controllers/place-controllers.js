@@ -1,4 +1,6 @@
 const HttpError = require('../utils/http-error');
+const validator = require('express-validator');
+const { validationResult } = require('express-validator');
 const uuid = require('uuid').v4;
 
 let DUMMY_PLACES = [
@@ -65,6 +67,13 @@ const getPlacesByUserId = (req, res, next) => {
 
 const createPlace = (req, res, next) => {
 
+    // Check if there are any validation errors from the array of 
+    // validators we provided in the routes
+    const errors = validator.validationResult(req);
+
+    if (!errors.isEmpty())
+        return next(new HttpError(422, 'Invalid inputs.'));
+
     const { title, description, coordinates, address, creator } = req.body;
 
     const createdPlace = {
@@ -113,7 +122,7 @@ const updatePlaceById = (req, res, next) => {
 
 };
 
-const deletePlaceById = (req, res, next) => { 
+const deletePlaceById = (req, res, next) => {
 
     const placeId = req.params.placeId;
 
@@ -126,6 +135,6 @@ const deletePlaceById = (req, res, next) => {
         }
     });
 
- };
+};
 
 module.exports = { getPlaceById, getPlacesByUserId, createPlace, updatePlaceById, deletePlaceById };
