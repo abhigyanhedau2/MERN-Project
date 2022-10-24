@@ -123,7 +123,7 @@ const createPlace = async (req, res, next) => {
 
 };
 
-const updatePlaceById = (req, res, next) => {
+const updatePlaceById = async (req, res, next) => {
 
     // Check if there are any validation errors from the array of 
     // validators we provided in the routes
@@ -135,35 +135,34 @@ const updatePlaceById = (req, res, next) => {
     const placeId = req.params.placeId;
     const { title, description } = req.body;
 
-    // Creating the copy of the found place, so that we won't change the actual object
-    const toBeUpdatedPlace = { ...DUMMY_PLACES.find(item => item.id === placeId) };
-    const placeIndex = DUMMY_PLACES.findIndex(item => item.id === placeId);
+    let toBeUpdatedPlace;
 
-    if (!toBeUpdatedPlace)
-        return next(new HttpError(404, 'Could not find a place for the provided id'));
-
-    toBeUpdatedPlace.title = title;
-    toBeUpdatedPlace.description = description;
-
-    DUMMY_PLACES[placeIndex] = toBeUpdatedPlace;
-
+    try {
+        toBeUpdatedPlace = await Place.findByIdAndUpdate(placeId, { title, description }, { new: true });
+    } catch (error) {
+        console.log(error);
+        return next(new HttpError(500, 'Place updation failed'));
+    }
+    
     res.status(200).json({
         status: 'success',
         data: {
             place: toBeUpdatedPlace
         }
     });
-
+    
 };
 
-const deletePlaceById = (req, res, next) => {
-
+const deletePlaceById = async (req, res, next) => {
+    
     const placeId = req.params.placeId;
-
-    if (!DUMMY_PLACES.find(place => place.id === placeId))
-        return next(404, 'Place Not Found');
-
-    DUMMY_PLACES = DUMMY_PLACES.filter(item => item.id !== placeId);
+    
+    try {
+        await Place.findByIdAndDelete(placeId);
+    } catch (error) {
+        console.log(error);
+        return next(new HttpError(500, 'Place deletion failed'));
+    }
 
     res.status(204).json({
         status: 'success',
