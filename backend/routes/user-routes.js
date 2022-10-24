@@ -1,11 +1,12 @@
 const express = require('express');
+const validator = require('express-validator');
 const userController = require('../controllers/user-controllers');
 const router = express.Router();
 
 const signUpValidationArr = [
-    check('name').not().isEmpty(),
-    check('email').normalizeEmail().isEmail(),
-    checkPassword('password').isLength({ min: 6 })
+    validator.check('name').not().isEmpty(),
+    validator.check('email').normalizeEmail().isEmail(),
+    validator.check('password').isLength({ min: 6 })
 ];
 
 const { getUsers, signup, login } = userController;
