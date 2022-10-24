@@ -54,7 +54,7 @@ const login = (req, res, next) => {
     const identifiedUser = DUMMY_USERS.find(user => user.email === email);
 
     if (!identifiedUser || (identifiedUser.password !== password))
-        return next(new HttpError(401, 'Invalid EMail'));
+        return next(new HttpError(401, 'Invalid Credentials'));
 
     res.status(200).json({
         status: 'success',
