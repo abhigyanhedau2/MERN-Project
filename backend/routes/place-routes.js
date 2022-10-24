@@ -18,7 +18,8 @@ router.get('/user/:userId', getPlacesByUserId);
 
 router.post('/', validationArr, createPlace);
 
-router.patch('/:placeId', updatePlaceById);
+// Only check for title and description
+router.patch('/:placeId', [validationArr[0], validationArr[1]], updatePlaceById);
 
 router.delete('/:placeId', deletePlaceById);
 

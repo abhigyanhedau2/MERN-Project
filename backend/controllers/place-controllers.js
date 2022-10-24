@@ -98,6 +98,13 @@ const createPlace = (req, res, next) => {
 
 const updatePlaceById = (req, res, next) => {
 
+    // Check if there are any validation errors from the array of 
+    // validators we provided in the routes
+    const errors = validator.validationResult(req);
+
+    if (!errors.isEmpty())
+        return next(new HttpError(422, 'Invalid inputs.'));
+
     const placeId = req.params.placeId;
     const { title, description } = req.body;
 
@@ -125,6 +132,9 @@ const updatePlaceById = (req, res, next) => {
 const deletePlaceById = (req, res, next) => {
 
     const placeId = req.params.placeId;
+
+    if (!DUMMY_PLACES.find(place => place.id === placeId))
+        return next(404, 'Place Not Found');
 
     DUMMY_PLACES = DUMMY_PLACES.filter(item => item.id !== placeId);
 

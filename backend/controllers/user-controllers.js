@@ -25,11 +25,16 @@ const getUsers = (req, res, next) => {
 
 const signup = (req, res, next) => {
 
+    const errors = validator.validationResult();
+
+    if (!errors.isEmpty())
+        return next(new HttpError(400, 'Invalid Credentials'));
+
     const { name, email, password } = req.body;
 
     const hasUser = DUMMY_USERS.find(user => user.email === email);
 
-    if(hasUser)
+    if (hasUser)
         return next(new HttpError(400, 'EMail already exists. Try logging in'));
 
     const newUser = {
