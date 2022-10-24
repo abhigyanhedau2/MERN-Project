@@ -1,7 +1,9 @@
 const HttpError = require('../utils/http-error');
 const validator = require('express-validator');
-const getCoordsForAddress = require('../utils/location');
 const uuid = require('uuid').v4;
+const mongoose = require('mongoose');
+const Place = require('../models/place');
+const getCoordsForAddress = require('../utils/location');
 
 let DUMMY_PLACES = [
     {
@@ -84,16 +86,21 @@ const createPlace = async (req, res, next) => {
         return next(error);
     }
 
-    const createdPlace = {
-        id: uuid(),
+    const createdPlace = new Place({
         title,
         description,
         location: coordinates,
+        image: 'https://media.timeout.com/images/101705309/image.jpg',
         address,
         creator
-    };
+    });
 
-    DUMMY_PLACES.push(createdPlace);
+    try {
+        await createdPlace.save();
+    } catch (error) {
+        console.log(error);
+        return next(new HttpError(500, 'Place creation failed'));
+    }
 
     res.status(201).json({
         status: 'success',

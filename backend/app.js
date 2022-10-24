@@ -32,14 +32,18 @@ app.use((err, req, res, next) => {
 
 });
 
-try {
-    // If the db connection is successful, start the server
-    mongoose.connect(process.env.MONGODB_CONNECTION_STRING, () => {
-        app.listen(process.env.PORT, () => {
-            console.log(`App listening on port ${process.env.PORT}`);
-        });
-    });
-} catch (error) {
-    console.log(error);
+// Connecting to database
+const connectToDB = async () => {
+    try {
+        await mongoose.connect(process.env.MONGODB_CONNECTION_STRING);
+        console.log('Successfully connected to the database');
+    } catch (error) {
+        console.log(`Some error occured while connecting to database: ${error}`);
+    }
 }
 
+connectToDB();
+
+app.listen(5000, () => {
+    console.log('App listening on port 5000');
+});
