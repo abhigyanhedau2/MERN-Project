@@ -13,13 +13,23 @@ const DUMMY_USERS = [
     }
 ];
 
-const getUsers = (req, res, next) => {
+const getUsers = async (req, res, next) => {
+
+    // Don't send back the password
+    let users;
+
+    try {
+        users = await User.find({}, '-password');
+    } catch (error) {
+        console.log(error);
+        return next(new HttpError(500, 'Internal Server Error'));
+    }
 
     res.status(200).json({
         status: 'success',
-        results: DUMMY_USERS.length,
+        results: users.length,
         data: {
-            users: DUMMY_USERS
+            users: users.map(user => user.toObject({ getters: true }))
         }
     });
 
@@ -83,7 +93,7 @@ const login = async (req, res, next) => {
         return next(new HttpError(500, 'Internal Server Error'));
     }
 
-    if(!existingUser || existingUser.password !== password)
+    if (!existingUser || existingUser.password !== password)
         return next(new HttpError(400, 'Invalid Credentials'));
 
     res.status(200).json({
