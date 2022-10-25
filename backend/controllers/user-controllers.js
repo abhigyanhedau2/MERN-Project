@@ -70,18 +70,25 @@ const signup = async (req, res, next) => {
 
 };
 
-const login = (req, res, next) => {
+const login = async (req, res, next) => {
 
     const { email, password } = req.body;
 
-    const identifiedUser = DUMMY_USERS.find(user => user.email === email);
+    let existingUser;
 
-    if (!identifiedUser || (identifiedUser.password !== password))
-        return next(new HttpError(401, 'Invalid Credentials'));
+    try {
+        existingUser = await User.findOne({ email });
+    } catch (error) {
+        console.log(error);
+        return next(new HttpError(500, 'Internal Server Error'));
+    }
+
+    if(!existingUser || existingUser.password !== password)
+        return next(new HttpError(400, 'Invalid Credentials'));
 
     res.status(200).json({
         status: 'success',
-        user: identifiedUser
+        user: existingUser
     });
 
 };
