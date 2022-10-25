@@ -20,10 +20,12 @@ const userSchema = new mongoose.Schema({
         type: String,
         required: true
     },
-    places: {
-        type: String,
-        required: true
-    }
+    // Array of places
+    places: [{
+        type: mongoose.Types.ObjectId,
+        required: true,
+        ref: 'Place'
+    }]
 });
 
 // To make sure email is unique always

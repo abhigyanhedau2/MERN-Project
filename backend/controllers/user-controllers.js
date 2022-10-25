@@ -42,7 +42,7 @@ const signup = async (req, res, next) => {
     if (!errors.isEmpty())
         return next(new HttpError(400, 'Invalid Credentials'));
 
-    const { name, email, password, places } = req.body;
+    const { name, email, password } = req.body;
 
     let existingUser;
 
@@ -61,7 +61,7 @@ const signup = async (req, res, next) => {
         email,
         image: 'https://t4.ftcdn.net/jpg/03/64/21/11/360_F_364211147_1qgLVxv1Tcq0Ohz3FawUfrtONzz8nq3e.jpg',
         password,
-        places
+        places: []
     });
 
     try {
