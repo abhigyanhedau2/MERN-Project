@@ -2,7 +2,9 @@ const HttpError = require('../utils/http-error');
 const validator = require('express-validator');
 const uuid = require('uuid').v4;
 const mongoose = require('mongoose');
+
 const Place = require('../models/place');
+const User = require('../models/user');
 const getCoordsForAddress = require('../utils/location');
 
 let DUMMY_PLACES = [
@@ -107,8 +109,35 @@ const createPlace = async (req, res, next) => {
         creator
     });
 
+    // Check if user id exists
+    let user;
+
     try {
-        await createdPlace.save();
+        user = await User.findById(creator);
+    } catch (error) {
+        console.log(error);
+        return next(new HttpError(500, 'Place creation failed'));
+    }
+
+    if (!user)
+        return next(new HttpError(404, 'No user found'));
+
+    try {
+
+        // Starting a session
+        const sess = await mongoose.startSession();
+
+        // Place is saved
+        sess.startTransaction();
+        await createdPlace.save({ session: sess });
+
+        // PlaceId is added to user document
+        user.places.push(createdPlace);
+        await user.save({ session: sess });
+
+        // Commiting the transaction
+        sess.commitTransaction();
+
     } catch (error) {
         console.log(error);
         return next(new HttpError(500, 'Place creation failed'));
@@ -143,20 +172,20 @@ const updatePlaceById = async (req, res, next) => {
         console.log(error);
         return next(new HttpError(500, 'Place updation failed'));
     }
-    
+
     res.status(200).json({
         status: 'success',
         data: {
             place: toBeUpdatedPlace
         }
     });
-    
+
 };
 
 const deletePlaceById = async (req, res, next) => {
-    
+
     const placeId = req.params.placeId;
-    
+
     try {
         await Place.findByIdAndDelete(placeId);
     } catch (error) {
