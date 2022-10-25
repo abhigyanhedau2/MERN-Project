@@ -63,19 +63,19 @@ const getPlacesByUserId = async (req, res, next) => {
     let userPlaces;
 
     try {
-        userPlaces = await Place.find({ creator: userId });
+        userPlaces = await User.findById(userId).populate('places');
     } catch (error) {
         return next(new HttpError(500, 'Places retrieval failed'));
     }
 
-    if (!userPlaces || userPlaces.length === 0)
+    if (!userPlaces || userPlaces.places.length === 0)
         return next(new HttpError(404, 'Could not find a place for the provided user id'));
 
     res.status(200).json({
         status: 'success',
         results: userPlaces.length,
         data: {
-            userPlaces: userPlaces.map(place => place.toObject({ getters: true }))
+            userPlaces: userPlaces.placesmap(place => place.toObject({ getters: true }))
         }
     });
 
