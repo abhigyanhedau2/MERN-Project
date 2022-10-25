@@ -1,6 +1,7 @@
 const bodyParser = require('body-parser');
 const express = require('express');
 const mongoose = require('mongoose');
+const cors = require('cors');
 
 const placeRouter = require('./routes/place-routes');
 const userRouter = require('./routes/user-routes');
@@ -10,6 +11,22 @@ require('dotenv').config();
 const app = express();
 app.use(bodyParser.json());
 
+app.use((req, res, next) => {
+
+    // Access-Control-Allow-Origin : which domains should have the access
+    // * - all domains can access
+    res.setHeader('Access-Control-Allow-Origin', '*');
+
+    // Access-Control-Allow-Headers : which headers incoming request may have
+    res.setHeader('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept, Authorization');
+
+    // Access-Control-Allow-Methods : which http methods should be allowed
+    res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PATCH, DELETE');
+
+    next();
+});
+
+app.use(cors());
 
 app.use('/api/v1/places', placeRouter);
 app.use('/api/v1/users', userRouter);

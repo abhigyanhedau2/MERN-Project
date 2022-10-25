@@ -52,8 +52,41 @@ const Auth = () => {
         setIsLogInMode(prev => !prev);
     };
 
-    const formSubmitHandler = (event) => {
+    const formSubmitHandler = async (event) => {
         event.preventDefault();
+
+        // Check if we're in login mode or signup mode
+        if (isLogInMode) {
+
+        }
+
+        else {
+
+            try {
+
+                const response = await fetch(`http://localhost:5000/api/v1/users/signup`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        name: formState.inputs.name.value,
+                        email: formState.inputs.email.value,
+                        password: formState.inputs.password.value
+                    })
+                });
+
+                const data = await response.json();
+
+                console.log(data);
+
+            } catch (error) {
+
+                console.log(error);
+
+            }
+
+        }
 
         authContext.login();
     };
