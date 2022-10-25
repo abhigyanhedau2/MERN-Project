@@ -2,6 +2,8 @@ const HttpError = require('../utils/http-error');
 const validator = require('express-validator');
 const uuid = require('uuid').v4;
 
+const User = require('../models/user');
+
 const DUMMY_USERS = [
     {
         id: 'u1',
@@ -23,32 +25,47 @@ const getUsers = (req, res, next) => {
 
 };
 
-const signup = (req, res, next) => {
+const signup = async (req, res, next) => {
 
-    const errors = validator.validationResult();
+    const errors = validator.validationResult(req);
 
     if (!errors.isEmpty())
         return next(new HttpError(400, 'Invalid Credentials'));
 
-    const { name, email, password } = req.body;
+    const { name, email, password, places } = req.body;
 
-    const hasUser = DUMMY_USERS.find(user => user.email === email);
+    let existingUser;
 
-    if (hasUser)
-        return next(new HttpError(400, 'EMail already exists. Try logging in'));
+    try {
+        existingUser = await User.findOne({ email });
+    } catch (error) {
+        console.log(error);
+        return next(new HttpError(500, 'Internal Server Error'));
+    }
 
-    const newUser = {
-        id: uuid(),
+    if (existingUser)
+        return next(new HttpError(400, 'User already exists.'));
+
+    const newUser = new User({
         name,
         email,
-        password
-    };
+        image: 'https://t4.ftcdn.net/jpg/03/64/21/11/360_F_364211147_1qgLVxv1Tcq0Ohz3FawUfrtONzz8nq3e.jpg',
+        password,
+        places
+    });
 
-    DUMMY_USERS.push(newUser);
+    try {
+        await newUser.save();
+    } catch (error) {
+        console.log(error);
+        return next(new HttpError(500, 'User creation failed'));
+    }
 
     res.status(201).json({
         status: 'success',
-        user: newUser
+        data: {
+            place: newUser.toObject({ getters: true })
+        }
     });
 
 };
