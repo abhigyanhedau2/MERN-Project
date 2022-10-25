@@ -59,8 +59,43 @@ const Auth = () => {
     const formSubmitHandler = async (event) => {
         event.preventDefault();
 
+        setIsLoading(true);
+
         // Check if we're in login mode or signup mode
         if (isLogInMode) {
+
+            try {
+
+                setIsLoading(true);
+
+                const response = await fetch(`http://localhost:5000/api/v1/users/login`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        email: formState.inputs.email.value,
+                        password: formState.inputs.password.value
+                    })
+                });
+
+                const data = await response.json();
+
+                // response.ok will be true if we don't have a 400ish or 500ish status code
+                if (!response.ok)
+                    throw new Error(data.message);
+
+                setIsLoading(false);
+
+                authContext.login();
+
+            } catch (error) {
+
+                setIsLoading(false);
+
+                setError(error.message || 'Something went wrong. Please try again.');
+
+            }
 
         }
 
