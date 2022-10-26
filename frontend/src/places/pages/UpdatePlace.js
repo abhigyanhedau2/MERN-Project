@@ -1,54 +1,23 @@
-import React, { useEffect, useState } from 'react';
-import { useParams } from 'react-router-dom';
+import React, { Fragment, useEffect, useState, useContext } from 'react';
+import { useParams, useNavigate } from 'react-router-dom';
 import { VALIDATOR_REQUIRE, VALIDATOR_MINLENGTH } from '../../shared/util/validators';
 import useForm from '../../shared/hooks/use-form';
 import Input from '../../shared/components/FormElements/Input';
 import Button from '../../shared/components/FormElements/Button';
 import Card from '../../shared/components/UIElements/Card/Card';
+import useHttpClient from '../../shared/hooks/http-hook';
+import LoadingSpinner from '../../shared/components/UIElements/LoadingSpinner';
+import ErrorModal from '../../shared/components/UIElements/ErrorModal';
+import AuthContext from '../../shared/store/auth-context';
 import './PlaceForm.css';
-
-const DUMMY_PLACES = [
-    {
-        id: 'p1',
-        title: 'Empire State Building',
-        description: 'One of the most famous sky scrapers in the world!',
-        imageUrl: 'https://images.pexels.com/photos/2190283/pexels-photo-2190283.jpeg?auto=compress&cs=tinysrgb&w=1600',
-        address: '20 W 34th St, New York, NY 10001',
-        location: {
-            lat: 40.7484445,
-            lng: -73.9878584
-        },
-        creatorId: 'u1'
-    },
-    {
-        id: 'p2',
-        title: 'Big Ben',
-        description: 'Big Ben is the nickname for the Great Bell of the striking clock at the north end of the Palace of Westminster in London, England, and the name is frequently extended to refer also to the clock and the clock tower. ',
-        imageUrl: 'https://images.pexels.com/photos/672532/pexels-photo-672532.jpeg?auto=compress&cs=tinysrgb&w=1600',
-        address: 'London SW1A 0AA, United Kingdom',
-        location: {
-            lat: 51.5007325,
-            lng: -0.1268141
-        },
-        creatorId: 'u2'
-    },
-    {
-        id: 'p3',
-        title: 'Eiffel Tower',
-        description: 'The Eiffel Tower is a wrought-iron lattice tower on the Champ de Mars in Paris, France.',
-        imageUrl: 'https://images.pexels.com/photos/532826/pexels-photo-532826.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1',
-        address: 'Champ de Mars, 5 Av. Anatole France, 75007 Paris, France',
-        location: {
-            lat: 48.8583736,
-            lng: 2.2901039
-        },
-        creatorId: 'u3'
-    },
-];
 
 const UpdatePlace = () => {
 
-    const [isLoading, setIsLoading] = useState(true);
+    const navigate = useNavigate();
+    const authContext = useContext(AuthContext);
+
+    const { isLoading, error, sendRequest, clearError } = useHttpClient();
+    const [loadedPlace, setLoadedPlace] = useState();
 
     const placeId = useParams().placeId;
 
@@ -63,28 +32,41 @@ const UpdatePlace = () => {
         }
     }, false);
 
-    const toBeUpdatedPlace = DUMMY_PLACES.find(place => place.id === placeId);
-
     useEffect(() => {
+        const fetchPlace = async () => {
+            try {
+                const data = await sendRequest(`http://localhost:5000/api/v1/places/${placeId}`, 'GET');
+                console.log('fetch');
+                setLoadedPlace(data.data.place);
+                console.log(data.data.place);
+                setFormData({
+                    title: {
+                        value: data.data.place.title,
+                        isValid: true
+                    },
+                    description: {
+                        value: data.data.place.description,
+                        isValid: true
+                    }
+                }, true);
+            } catch (error) {
 
-        if (toBeUpdatedPlace) {
-            setFormData({
-                title: {
-                    value: toBeUpdatedPlace.title,
-                    isValid: true
-                },
-                description: {
-                    value: toBeUpdatedPlace.description,
-                    isValid: true
-                }
-            }, true);
-        }
+            }
+        };
 
-        setIsLoading(false);
+        fetchPlace();
 
-    }, [setFormData, toBeUpdatedPlace]);
+    }, [sendRequest, placeId, setFormData]);
 
-    if (!toBeUpdatedPlace) {
+    if (isLoading) {
+        return (
+            <div className="center">
+                <LoadingSpinner asOverlay />
+            </div>
+        );
+    }
+
+    if (!loadedPlace && !error) {
         return (
             <div className="center">
                 <Card style={{ padding: '1rem' }}>
@@ -94,47 +76,54 @@ const UpdatePlace = () => {
         );
     }
 
-    if (isLoading) {
-        return (
-            <div className="center">
-                <h2>Loading...</h2>
-            </div>
-        );
-    }
-
-    const formSubmitHandler = (event) => {
+    const formSubmitHandler = async (event) => {
 
         event.preventDefault();
 
-        // Send data to backend
-        console.log(formState.inputs, formState.isValid);
+        try {
+            await sendRequest(`http://localhost:5000/api/v1/places/${placeId}`, 'PATCH', {
+                'Content-Type': 'application/json'
+            },
+                JSON.stringify({
+                    title: formState.inputs.title.value,
+                    description: formState.inputs.description.value
+                }));
+
+            navigate(`/${authContext.userId}/places`);
+
+        } catch (error) {
+
+        }
 
     };
 
     return (
-        <form className='place-form' onSubmit={formSubmitHandler}>
-            <Input
-                id="title"
-                type="text"
-                element="input"
-                label="Title"
-                validators={[VALIDATOR_REQUIRE()]}
-                errorText="Please enter a valid title"
-                onInput={inputChangeHandler}
-                initialValue={formState.inputs.title.value}
-                initialValidity={formState.inputs.title.isValid}
-            />
-            <Input
-                id="description"
-                label="Description"
-                validators={[VALIDATOR_MINLENGTH(5)]}
-                errorText="Please enter a valid description (atleast 5 characters)."
-                onInput={inputChangeHandler}
-                initialValue={formState.inputs.description.value}
-                initialValidity={formState.inputs.description.isValid}
-            />
-            <Button type="submit" disabled={!formState.isValid}>Update</Button>
-        </form>
+        <Fragment>
+            <ErrorModal error={error} onClear={clearError} />
+            {!isLoading && loadedPlace && (<form className='place-form' onSubmit={formSubmitHandler}>
+                <Input
+                    id="title"
+                    type="text"
+                    element="input"
+                    label="Title"
+                    validators={[VALIDATOR_REQUIRE()]}
+                    errorText="Please enter a valid title"
+                    onInput={inputChangeHandler}
+                    initialValue={loadedPlace.title}
+                    initialValidity={true}
+                />
+                <Input
+                    id="description"
+                    label="Description"
+                    validators={[VALIDATOR_MINLENGTH(5)]}
+                    errorText="Please enter a valid description (atleast 5 characters)."
+                    onInput={inputChangeHandler}
+                    initialValue={loadedPlace.description}
+                    initialValidity={true}
+                />
+                <Button type="submit" disabled={!formState.isValid}>Update</Button>
+            </form>)}
+        </Fragment>
     )
 };
 
