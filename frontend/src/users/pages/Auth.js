@@ -7,6 +7,7 @@ import Button from '../../shared/components/FormElements/Button';
 import AuthContext from '../../shared/store/auth-context';
 import LoadingSpinner from '../../shared/components/UIElements/LoadingSpinner';
 import ErrorModal from '../../shared/components/UIElements/ErrorModal';
+import useHttpClient from '../../shared/hooks/http-hook';
 import './Auth.css';
 
 const Auth = () => {
@@ -14,8 +15,7 @@ const Auth = () => {
     const authContext = useContext(AuthContext);
 
     const [isLogInMode, setIsLogInMode] = useState(true);
-    const [isLoading, setIsLoading] = useState(false);
-    const [error, setError] = useState(undefined);
+    const { isLoading, error, sendRequest, clearError } = useHttpClient();
 
     const [formState, inputChangeHandler, setFormData] = useForm({
         email: {
@@ -59,41 +59,23 @@ const Auth = () => {
     const formSubmitHandler = async (event) => {
         event.preventDefault();
 
-        setIsLoading(true);
 
         // Check if we're in login mode or signup mode
         if (isLogInMode) {
 
             try {
 
-                setIsLoading(true);
-
-                const response = await fetch(`http://localhost:5000/api/v1/users/login`, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({
+                await sendRequest(`http://localhost:5000/api/v1/users/login`, 'POST', {
+                    'Content-Type': 'application/json'
+                },
+                    JSON.stringify({
                         email: formState.inputs.email.value,
                         password: formState.inputs.password.value
-                    })
-                });
-
-                const data = await response.json();
-
-                // response.ok will be true if we don't have a 400ish or 500ish status code
-                if (!response.ok)
-                    throw new Error(data.message);
-
-                setIsLoading(false);
+                    }));
 
                 authContext.login();
 
             } catch (error) {
-
-                setIsLoading(false);
-
-                setError(error.message || 'Something went wrong. Please try again.');
 
             }
 
@@ -103,39 +85,18 @@ const Auth = () => {
 
             try {
 
-                setIsLoading(true);
-
-                const response = await fetch(`http://localhost:5000/api/v1/users/signup`, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({
+                await sendRequest(`http://localhost:5000/api/v1/users/signup`, 'POST', {
+                    'Content-Type': 'application/json'
+                },
+                    JSON.stringify({
                         name: formState.inputs.name.value,
                         email: formState.inputs.email.value,
                         password: formState.inputs.password.value
-                    })
-                });
-
-                const data = await response.json();
-
-                // response.ok will be true if we don't have a 400ish or 500ish status code
-                if (!response.ok)
-                    throw new Error(data.message);
-
-                console.log(data);
-
-                setIsLoading(false);
+                    }));
 
                 authContext.login();
 
             } catch (error) {
-
-                console.log(error);
-
-                setIsLoading(false);
-
-                setError(error.message || 'Something went wrong. Please try again.');
 
             }
 
@@ -143,11 +104,9 @@ const Auth = () => {
 
     };
 
-    const errorHandler = () => setError(null);
-
     return (
         <Fragment>
-            <ErrorModal error={error} onClear={errorHandler} />
+            <ErrorModal error={error} onClear={clearError} />
             <Card className="authentication" style={{ padding: '1rem' }}>
                 {isLoading && <LoadingSpinner asOverlay />}
                 <h2>Login</h2>
