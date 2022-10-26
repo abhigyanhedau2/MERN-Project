@@ -36,7 +36,7 @@ const useHttpClient = () => {
             return data;
 
         } catch (err) {
-            if (err.message !== 'The user aborted a request.') {
+            if (err.message !== 'The user aborted a request.' && err.message !== 'Unexpected end of JSON input') {
                 setError(err.message);
                 setIsLoading(false);
                 throw err;

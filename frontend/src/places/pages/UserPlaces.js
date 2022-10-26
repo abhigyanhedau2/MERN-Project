@@ -26,7 +26,9 @@ const UserPlaces = () => {
 
     }, [sendRequest, params.userId]);
 
-    // const filteredPlaces = DUMMY_PLACES.filter(item => item.creatorId === params.userId)
+    const placeDeleteHandler = (deletedPlaceId) => {
+        setUserPlaces(prevPlaces => prevPlaces.filter(place => place.id !== deletedPlaceId))
+    };
 
     return (
         <Fragment>
@@ -34,7 +36,7 @@ const UserPlaces = () => {
                 <LoadingSpinner asOverlay />
             </div>}
             <ErrorModal error={error} onClear={clearError} />
-            {!isLoading && userPlaces && <PlaceList items={userPlaces} />}
+            {!isLoading && userPlaces && <PlaceList items={userPlaces} onDeletePlace={placeDeleteHandler} />}
         </Fragment>
     );
 };

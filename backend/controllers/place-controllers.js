@@ -187,11 +187,8 @@ const deletePlaceById = async (req, res, next) => {
         return next(new HttpError(500, 'Place deletion failed'));
     }
 
-    res.status(204).json({
-        status: 'success',
-        data: {
-            place: null
-        }
+    res.status(204).send({
+        status: 'success'
     });
 
 };
