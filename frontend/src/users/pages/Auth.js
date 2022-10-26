@@ -65,7 +65,7 @@ const Auth = () => {
 
             try {
 
-                await sendRequest(`http://localhost:5000/api/v1/users/login`, 'POST', {
+                const data = await sendRequest(`http://localhost:5000/api/v1/users/login`, 'POST', {
                     'Content-Type': 'application/json'
                 },
                     JSON.stringify({
@@ -73,7 +73,7 @@ const Auth = () => {
                         password: formState.inputs.password.value
                     }));
 
-                authContext.login();
+                authContext.login(data.data.user.id);
 
             } catch (error) {
 
@@ -85,7 +85,7 @@ const Auth = () => {
 
             try {
 
-                await sendRequest(`http://localhost:5000/api/v1/users/signup`, 'POST', {
+                const data = await sendRequest(`http://localhost:5000/api/v1/users/signup`, 'POST', {
                     'Content-Type': 'application/json'
                 },
                     JSON.stringify({
@@ -94,7 +94,7 @@ const Auth = () => {
                         password: formState.inputs.password.value
                     }));
 
-                authContext.login();
+                authContext.login(data.data.user.id);
 
             } catch (error) {
 

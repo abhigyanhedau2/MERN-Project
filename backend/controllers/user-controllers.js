@@ -74,7 +74,7 @@ const signup = async (req, res, next) => {
     res.status(201).json({
         status: 'success',
         data: {
-            place: newUser.toObject({ getters: true })
+            user: newUser.toObject({ getters: true })
         }
     });
 
@@ -98,7 +98,9 @@ const login = async (req, res, next) => {
 
     res.status(200).json({
         status: 'success',
-        user: existingUser
+        data: {
+            user: existingUser.toObject({ getters: true })
+        }
     });
 
 };
