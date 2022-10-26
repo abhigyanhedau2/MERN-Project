@@ -82,7 +82,8 @@ const UpdatePlace = () => {
 
         try {
             await sendRequest(`http://localhost:5000/api/v1/places/${placeId}`, 'PATCH', {
-                'Content-Type': 'application/json'
+                'Content-Type': 'application/json',
+                Authorization: `Bearer ${authContext.token}`
             },
                 JSON.stringify({
                     title: formState.inputs.title.value,

@@ -32,7 +32,9 @@ const PlaceItem = (props) => {
         setShowConfirmModal(false);
 
         try {
-            await sendRequest(`http://localhost:5000/api/v1/places/${props.id}`, 'DELETE');
+            await sendRequest(`http://localhost:5000/api/v1/places/${props.id}`, 'DELETE', {
+                Authorization: `Bearer ${authContext.token}`
+            });
             props.onDelete(props.id);
             navigate(`/${authContext.userId}/places`);
         } catch (error) {
@@ -80,7 +82,6 @@ const PlaceItem = (props) => {
                     </div>
                     <div className="place-item__actions">
                         <Button inverse onClick={toggleMapHandler}>View Place</Button>
-                        {console.log(authContext.userId, props.creatorId)}
                         {(authContext.userId === props.creatorId) && <Button to={`/places/${props.id}`}>Edit</Button>}
                         {(authContext.userId === props.creatorId) && <Button danger onClick={toggleDeleteWarningHandler}>Delete</Button>}
                     </div>
