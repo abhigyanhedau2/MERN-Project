@@ -49,7 +49,7 @@ const getPlacesByUserId = async (req, res, next) => {
         status: 'success',
         results: userPlaces.length,
         data: {
-            userPlaces: userPlaces.placesmap(place => place.toObject({ getters: true }))
+            userPlaces: userPlaces.places.map(place => place.toObject({ getters: true }))
         }
     });
 
