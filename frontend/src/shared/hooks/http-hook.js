@@ -36,9 +36,11 @@ const useHttpClient = () => {
             return data;
 
         } catch (err) {
-            setError(err.message);
-            setIsLoading(false);
-            throw err;
+            if (err.message !== 'The user aborted a request.') {
+                setError(err.message);
+                setIsLoading(false);
+                throw err;
+            }
         }
 
     }, []);
