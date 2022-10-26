@@ -1,6 +1,7 @@
 const HttpError = require('../utils/http-error');
 const validator = require('express-validator');
 const bcrypt = require('bcryptjs');
+const jwt = require('jsonwebtoken');
 
 const User = require('../models/user');
 
@@ -68,10 +69,21 @@ const signup = async (req, res, next) => {
         return next(new HttpError(500, 'User creation failed'));
     }
 
+    let token;
+    try {
+        token = jwt.sign({ userId: newUser.id, email: newUser.email }, 'supersecret_dont_share', {
+            expiresIn: '1h'
+        });
+    } catch (error) {
+        return next(new HttpError(500, 'User creation failed'));
+    }
+
     res.status(201).json({
         status: 'success',
         data: {
-            user: newUser.toObject({ getters: true })
+            userId: newUser.id,
+            email: newUser.email,
+            token
         }
     });
 
@@ -104,12 +116,30 @@ const login = async (req, res, next) => {
     if (!passwordIsValid)
         return next(new HttpError(400, 'Invalid Credentials'));
 
-    
+    let token;
+    try {
+        token = jwt.sign({ userId: existingUser.id, email: existingUser.email }, 'supersecret_dont_share', {
+            expiresIn: '1h'
+        });
+    } catch (error) {
+        return next(new HttpError(500, 'Loggin In failed'));
+    }
+
+    res.status(201).json({
+        status: 'success',
+        data: {
+            userId: existingUser.id,
+            email: existingUser.email,
+            token
+        }
+    });
 
     res.status(200).json({
         status: 'success',
         data: {
-            user: existingUser.toObject({ getters: true })
+            userId: existingUser.id,
+            email: existingUser.email,
+            token
         }
     });
 
