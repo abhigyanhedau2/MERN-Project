@@ -19,7 +19,7 @@ const UsersList = (props) => {
         return <UserItem
             key={user.id}
             id={user.id}
-            profileImg={user.image}
+            image={user.image}
             name={user.name}
             placesCount={user.places.length}
         />
