@@ -50,7 +50,9 @@ const NewPlace = () => {
             formData.append('creator', authContext.userId);
             formData.append('image', formState.inputs.image.value);
 
-            await sendRequest('http://localhost:5000/api/v1/places', 'POST', {}, formData);
+            await sendRequest('http://localhost:5000/api/v1/places', 'POST', {
+                Authorization: `Bearer ${authContext.token}`
+            }, formData);
 
             navigate('/');
 

@@ -79,7 +79,7 @@ const Auth = () => {
                         password: formState.inputs.password.value
                     }));
 
-                authContext.login(data.data.user.id);
+                authContext.login(data.data.userId, data.data.token);
 
             } catch (error) {
 
@@ -99,7 +99,7 @@ const Auth = () => {
 
                 const data = await sendRequest(`http://localhost:5000/api/v1/users/signup`, 'POST', {}, formData);
 
-                authContext.login(data.data.user.id);
+                authContext.login(data.data.userId, data.data.token);
 
             } catch (error) {
 

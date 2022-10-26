@@ -135,16 +135,6 @@ const login = async (req, res, next) => {
             token
         }
     });
-
-    res.status(200).json({
-        status: 'success',
-        data: {
-            userId: existingUser.id,
-            email: existingUser.email,
-            token
-        }
-    });
-
 };
 
 module.exports = { getUsers, signup, login };
