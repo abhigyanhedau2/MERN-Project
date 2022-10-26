@@ -1,6 +1,7 @@
 const express = require('express');
 const placeControllers = require('../controllers/place-controllers');
 const validator = require('express-validator');
+const fileUpload = require('../middleware/file-upload');
 const router = express.Router();
 
 const { getPlaceById, getPlacesByUserId, createPlace, updatePlaceById, deletePlaceById } = placeControllers;
@@ -16,7 +17,7 @@ router.get('/:placeId', getPlaceById);
 // Get places belonging to a specific user
 router.get('/user/:userId', getPlacesByUserId);
 
-router.post('/', validationArr, createPlace);
+router.post('/', fileUpload.single('image'), validationArr, createPlace);
 
 // Only check for title and description
 router.patch('/:placeId', [validationArr[0], validationArr[1]], updatePlaceById);

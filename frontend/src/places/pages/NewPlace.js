@@ -8,6 +8,7 @@ import useHttpClient from '../../shared/hooks/http-hook';
 import AuthContext from '../../shared/store/auth-context';
 import ErrorModal from '../../shared/components/UIElements/ErrorModal';
 import LoadingSpinner from '../../shared/components/UIElements/LoadingSpinner';
+import ImageUpload from '../../shared/components/FormElements/ImageUpload';
 import './PlaceForm.css';
 
 const NewPlace = () => {
@@ -29,6 +30,10 @@ const NewPlace = () => {
         address: {
             value: '',
             isValid: false
+        },
+        image: {
+            value: null,
+            isValid: false
         }
     }, false);
 
@@ -38,15 +43,14 @@ const NewPlace = () => {
 
         try {
 
-            await sendRequest('http://localhost:5000/api/v1/places', 'POST', {
-                'Content-Type': 'application/json'
-            },
-                JSON.stringify({
-                    title: formState.inputs.title.value,
-                    description: formState.inputs.description.value,
-                    address: formState.inputs.address.value,
-                    creator: authContext.userId
-                }));
+            const formData = new FormData();
+            formData.append('title', formState.inputs.title.value);
+            formData.append('description', formState.inputs.description.value);
+            formData.append('address', formState.inputs.address.value);
+            formData.append('creator', authContext.userId);
+            formData.append('image', formState.inputs.image.value);
+
+            await sendRequest('http://localhost:5000/api/v1/places', 'POST', {}, formData);
 
             navigate('/');
 
@@ -61,6 +65,7 @@ const NewPlace = () => {
             <ErrorModal error={error} onClear={clearError} />
             <form className='place-form' onSubmit={formSubmitHandler}>
                 {isLoading && <LoadingSpinner asOverlay />}
+                <ImageUpload id="image" onInput={inputChangeHandler} center />
                 <Input
                     id="title"
                     element='input'
