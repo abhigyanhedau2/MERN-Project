@@ -90,8 +90,21 @@ const login = async (req, res, next) => {
         return next(new HttpError(500, 'Internal Server Error'));
     }
 
-    if (!existingUser || existingUser.password !== password)
+    if (!existingUser)
         return next(new HttpError(400, 'Invalid Credentials'));
+
+    let passwordIsValid;
+
+    try {
+        passwordIsValid = await bcrypt.compare(password, existingUser.password);
+    } catch (error) {
+        return next(new HttpError(500, 'Internal Server Error'));
+    }
+
+    if (!passwordIsValid)
+        return next(new HttpError(400, 'Invalid Credentials'));
+
+    
 
     res.status(200).json({
         status: 'success',
