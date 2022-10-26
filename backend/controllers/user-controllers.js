@@ -48,8 +48,10 @@ const signup = async (req, res, next) => {
     if (existingUser)
         return next(new HttpError(400, 'User already exists.'));
 
+    let hashedPassword;
+
     try {
-        const hashedPassword = await bcrypt.hash(password, 12);
+        hashedPassword = await bcrypt.hash(password, 12);
     } catch (error) {
         return next(new HttpError(500, 'User creation failed'));
     }

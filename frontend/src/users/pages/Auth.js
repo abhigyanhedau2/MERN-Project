@@ -114,7 +114,8 @@ const Auth = () => {
             <ErrorModal error={error} onClear={clearError} />
             <Card className="authentication" style={{ padding: '1rem' }}>
                 {isLoading && <LoadingSpinner asOverlay />}
-                <h2>Login</h2>
+                {isLogInMode && <h2>Login</h2>}
+                {!isLogInMode && <h2>Sign Up</h2>}
                 <hr />
                 <form onSubmit={formSubmitHandler}>
                     {!isLogInMode && (

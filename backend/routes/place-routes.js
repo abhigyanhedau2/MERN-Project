@@ -2,6 +2,7 @@ const express = require('express');
 const placeControllers = require('../controllers/place-controllers');
 const validator = require('express-validator');
 const fileUpload = require('../middleware/file-upload');
+const checkAuth = require('../middleware/check-auth');
 const router = express.Router();
 
 const { getPlaceById, getPlacesByUserId, createPlace, updatePlaceById, deletePlaceById } = placeControllers;
@@ -16,6 +17,9 @@ router.get('/:placeId', getPlaceById);
 
 // Get places belonging to a specific user
 router.get('/user/:userId', getPlacesByUserId);
+
+// Protecting below routes
+router.use(checkAuth);
 
 router.post('/', fileUpload.single('image'), validationArr, createPlace);
 
