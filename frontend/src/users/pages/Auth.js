@@ -8,6 +8,7 @@ import AuthContext from '../../shared/store/auth-context';
 import LoadingSpinner from '../../shared/components/UIElements/LoadingSpinner';
 import ErrorModal from '../../shared/components/UIElements/ErrorModal';
 import useHttpClient from '../../shared/hooks/http-hook';
+import ImageUpload from '../../shared/components/FormElements/ImageUpload';
 import './Auth.css';
 
 const Auth = () => {
@@ -34,9 +35,10 @@ const Auth = () => {
         if (!isLogInMode) {
             setFormData({
                 ...formState.inputs,
-                name: undefined
+                name: undefined,
                 // If both are valid, then only set the overall form state to valid,
                 // since, we're going from signup to login mode
+                image: undefined
             }, formState.inputs.email.isValid && formState.inputs.password.isValid);
         }
 
@@ -46,6 +48,10 @@ const Auth = () => {
                 ...formState.inputs,
                 name: {
                     value: '',
+                    isValid: false
+                },
+                image: {
+                    value: null,
                     isValid: false
                 }
                 // If we are switching to signup mode, then name input is added and 
@@ -123,6 +129,7 @@ const Auth = () => {
                             onInput={inputChangeHandler}
                         />
                     )}
+                    {!isLogInMode && <ImageUpload id="image" onInput={inputChangeHandler} center />}
                     <Input
                         id="email"
                         element="input"
