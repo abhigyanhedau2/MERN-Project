@@ -142,10 +142,25 @@ const updatePlaceById = async (req, res, next) => {
     let toBeUpdatedPlace;
 
     try {
-        toBeUpdatedPlace = await Place.findByIdAndUpdate(placeId, { title, description }, { new: true });
+        toBeUpdatedPlace = await Place.findById(placeId);
     } catch (error) {
         console.log(error);
         return next(new HttpError(500, 'Place updation failed'));
+    }
+
+    if (toBeUpdatedPlace.creator.toString() !== req.userData.userId) {
+        const error = new HttpError(401, 'You are not allowed to edit this place.');
+        return next(error);
+    }
+
+    toBeUpdatedPlace.title = title;
+    toBeUpdatedPlace.description = description;
+
+    try {
+        await toBeUpdatedPlace.save();
+    } catch (err) {
+        const error = new HttpError(500, 'Something went wrong, could not update place.');
+        return next(error);
     }
 
     res.status(200).json({
