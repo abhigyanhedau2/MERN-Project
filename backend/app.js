@@ -1,3 +1,4 @@
+const fs = require('fs');
 const bodyParser = require('body-parser');
 const express = require('express');
 const mongoose = require('mongoose');
@@ -37,6 +38,12 @@ app.use('*', (req, res, next) => {
 
 // If we give 4 params to a callback function, it will be treater as error handler functions
 app.use((err, req, res, next) => {
+
+    if (req.file) {
+        fs.unlink(req.file.path, (err) => {
+            console.log(err);
+        });
+    }
 
     // If the response has been sent or not
     if (res.headerSent)
