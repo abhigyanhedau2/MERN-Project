@@ -71,7 +71,7 @@ const Auth = () => {
 
             try {
 
-                const data = await sendRequest(`http://localhost:5000/api/v1/users/login`, 'POST', {
+                const data = await sendRequest(`${process.env.REACT_APP_HOME_URL}/api/v1/users/login`, 'POST', {
                     'Content-Type': 'application/json'
                 },
                     JSON.stringify({
@@ -97,7 +97,7 @@ const Auth = () => {
                 formData.append('password', formState.inputs.password.value);
                 formData.append('image', formState.inputs.image.value);
 
-                const data = await sendRequest(`http://localhost:5000/api/v1/users/signup`, 'POST', {}, formData);
+                const data = await sendRequest(`${process.env.REACT_APP_HOME_URL}/api/v1/users/signup`, 'POST', {}, formData);
 
                 authContext.login(data.data.userId, data.data.token);
 

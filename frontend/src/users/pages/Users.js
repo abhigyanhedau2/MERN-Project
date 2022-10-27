@@ -14,7 +14,7 @@ const Users = () => {
         const fetchUsers = async () => {
 
             try {
-                const data = await sendRequest('http://localhost:5000/api/v1/users', 'GET');
+                const data = await sendRequest(`${process.env.REACT_APP_HOME_URL}/api/v1/user`, 'GET');
                 setLoadedUsers(data.data.users);
 
             } catch (error) {
