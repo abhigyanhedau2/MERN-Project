@@ -15,7 +15,7 @@ const checkAuth = (req, res, next) => {
         if (!token)
             return next(new HttpError(401, 'Authentication failed.'));
 
-        const decodedToken = jwt.verify(token, 'supersecret_dont_share');
+        const decodedToken = jwt.verify(token, process.env.JWT_SECRET_KEY);
 
         req.userData = {
             userId: decodedToken.userId,

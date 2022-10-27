@@ -59,6 +59,9 @@ app.use((err, req, res, next) => {
 
 });
 
+// DB Connection string
+const DB_URI = `mongodb+srv://${process.env.DB_USERNAME}:${process.env.DB_PASSWORD}@cluster0.plozmds.mongodb.net/${process.env.DB_NAME}?retryWrites=true&w=majority`
+
 // Connecting to database
 const connectToDB = async () => {
     try {
